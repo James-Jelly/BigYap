@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- BigYap does not track users across apps/websites. -->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<!-- No tracking domains: the app makes no network connections of its own
+	     (the only network activity is the system-mediated download of Apple's
+	     on-device speech model via AssetInventory). -->
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<!-- No data is collected. All audio/transcripts stay on device. -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<!-- Required-reason APIs the app uses. -->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<!-- UserDefaults: app settings + last-transcript store (AppSettings, LatestTranscriptStore). -->
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!-- CA92.1: access user defaults to read/write info accessible only to this app. -->
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
