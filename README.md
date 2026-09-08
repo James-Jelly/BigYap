@@ -88,8 +88,8 @@ The strongest check is to build it yourself from this source and use that copy i
 
 ## Install
 
-- **Download:** a signed and notarised DMG is published on the
-  [Releases](../../releases) page. Drag BigYap to Applications.
+- **Download:** a signed and notarised DMG is on the [Releases](../../releases) page and
+  at [bigyap.app](https://bigyap.app). Drag BigYap to Applications.
 - **Build it yourself:** see below.
 
 On first launch macOS asks for the microphone. BigYap then explains the optional

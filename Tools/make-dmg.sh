@@ -13,10 +13,24 @@ STAGE="$BUILD/stage"
 rm -rf "$BUILD"
 mkdir -p "$STAGE"
 
-IDENTITY=$(security find-identity -v -p codesigning \
-  | grep "Developer ID Application" | head -1 | awk '{print $2}' || true)
+# Pick the Developer ID Application certificate. Set SIGNING_IDENTITY to a
+# SHA-1 hash to force one; otherwise the most recently issued one wins, so a
+# reissued certificate (say, after a team rename) is used automatically.
+IDENTITY="${SIGNING_IDENTITY:-}"
+if [ -z "$IDENTITY" ]; then
+  IDENTITY=$(security find-identity -v -p codesigning \
+    | grep "Developer ID Application" | awk '{print $2}' \
+    | while read -r hash; do
+        start=$(security find-certificate -a -c "Developer ID Application" -Z -p 2>/dev/null \
+          | awk -v h="$hash" 'BEGIN{RS="-----END CERTIFICATE-----"} $0 ~ h {print $0 "-----END CERTIFICATE-----"}' \
+          | openssl x509 -noout -startdate 2>/dev/null | cut -d= -f2)
+        [ -n "$start" ] || start="Jan 1 00:00:00 1970 GMT"
+        echo "$(date -j -f "%b %d %T %Y %Z" "$start" +%s 2>/dev/null || echo 0) $hash"
+      done | sort -n | tail -1 | awk '{print $2}' || true)
+fi
 if [ -n "$IDENTITY" ]; then
   echo "Signing with Developer ID $IDENTITY"
+  security find-identity -v -p codesigning | grep "$IDENTITY" | sed 's/^ *[0-9]*) //' 
   SIGN_ARGS=(CODE_SIGN_IDENTITY="$IDENTITY" CODE_SIGN_STYLE=Manual \
              PROVISIONING_PROFILE_SPECIFIER="" \
              CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
