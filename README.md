@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://bigyap.app/downloads/BigYap-1.0.dmg"><strong>Download for Mac</strong></a> ·
   <a href="https://bigyap.app">bigyap.app</a> ·
   <a href="https://bigyap.app/privacy">Privacy policy</a> ·
   <a href="LICENSE">MIT licence</a>
@@ -88,8 +89,11 @@ The strongest check is to build it yourself from this source and use that copy i
 
 ## Install
 
-- **Download:** a signed and notarised DMG is on the [Releases](../../releases) page and
-  at [bigyap.app](https://bigyap.app). Drag BigYap to Applications.
+- **Download:** get the signed and notarised DMG from
+  [bigyap.app](https://bigyap.app), or the direct link
+  [BigYap-1.0.dmg](https://bigyap.app/downloads/BigYap-1.0.dmg). Open it and drag BigYap
+  to Applications. The same file, with its SHA-256 checksum, is attached to each
+  [GitHub release](../../releases).
 - **Build it yourself:** see below.
 
 On first launch macOS asks for the microphone. BigYap then explains the optional
