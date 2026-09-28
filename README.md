@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://bigyap.app/downloads/BigYap-1.1.1.dmg"><strong>Download for Mac</strong></a> ·
+  <a href="https://bigyap.app/downloads/BigYap-1.1.2.dmg"><strong>Download for Mac</strong></a> ·
   <a href="https://bigyap.app">bigyap.app</a> ·
   <a href="https://bigyap.app/privacy">Privacy policy</a> ·
   <a href="LICENSE">MIT licence</a>
@@ -94,7 +94,7 @@ The strongest check is to build it yourself from this source and use that copy i
 
 - **Download:** get the signed and notarised DMG from
   [bigyap.app](https://bigyap.app), or the direct link
-  [BigYap-1.1.1.dmg](https://bigyap.app/downloads/BigYap-1.1.1.dmg). Open it and drag BigYap
+  [BigYap-1.1.2.dmg](https://bigyap.app/downloads/BigYap-1.1.2.dmg). Open it and drag BigYap
   to Applications. The same file, with its SHA-256 checksum, is attached to each
   [GitHub release](../../releases).
 - **Build it yourself:** see below.

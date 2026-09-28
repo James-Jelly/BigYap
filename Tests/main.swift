@@ -85,5 +85,23 @@ check(!PlaybackPausePolicy.isOtherAudioPlaying([audio(300, "us.zoom.xos", input:
 check(!PlaybackPausePolicy.isOtherAudioPlaying([audio(400, "systemsoundserverd"), audio(401, "com.apple.VoiceOver")], ownPID: me), "pause policy: alert sounds and VoiceOver are ignored")
 check(PlaybackPausePolicy.isOtherAudioPlaying([audio(300, "us.zoom.xos", input: true), audio(200, "com.apple.Music")], ownPID: me), "pause policy: music alongside a call still pauses")
 
+// MARK: AppSettings — fresh install defaults
+// A throwaway suite stands in for a first launch: nothing stored, so every
+// toggle shows its default. Each user-facing switch should start on.
+let freshSuite = "bigyap-tests-\(UUID().uuidString)"
+let freshDefaults = UserDefaults(suiteName: freshSuite)!
+let fresh = AppSettings(defaults: freshDefaults)
+check(fresh.removeFillerWords, "fresh install: remove filler words on")
+check(fresh.paragraphPerSentence, "fresh install: new line per sentence on")
+check(fresh.appendTrailingSpace, "fresh install: append trailing space on")
+check(fresh.copyToClipboard, "fresh install: copy transcript on")
+check(fresh.trimSilence, "fresh install: trim silence on")
+check(fresh.correctWithVocabulary, "fresh install: correct with vocabulary on")
+check(fresh.globalHotKeyEnabled, "fresh install: system-wide dictation on")
+check(fresh.pausePlaybackWhileRecording, "fresh install: pause music on")
+freshDefaults.set(false, forKey: "removeFillerWords")
+check(!AppSettings(defaults: freshDefaults).removeFillerWords, "a stored choice beats the default")
+freshDefaults.removePersistentDomain(forName: freshSuite)
+
 print(failures == 0 ? "\nALL PASSED" : "\n\(failures) FAILED")
 exit(failures == 0 ? 0 : 1)

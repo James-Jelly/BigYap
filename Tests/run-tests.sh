@@ -11,6 +11,8 @@ xcrun swiftc -swift-version 6 \
   bigyap/Services/TranscriptEditPolicy.swift \
   bigyap/Services/VoiceActivityTrimmer.swift \
   bigyap/Services/PlaybackPausePolicy.swift \
+  bigyap/Services/AppSettings.swift \
+  bigyap/Services/DictationShortcut.swift \
   Tests/main.swift \
   -o "$OUT"
 exec "$OUT"

@@ -2,6 +2,11 @@
 
 All notable changes to BigYap for Mac, newest first.
 
+## 1.1.2 (2026-09-28)
+
+- Remove filler words is now on by default, so every switch in Settings starts on for a
+  new install. If you turned it off yourself, it stays off.
+
 ## 1.1.1 (2026-09-28)
 
 - Settings > Playback now says "Needs Accessibility", with a button to set it up, when

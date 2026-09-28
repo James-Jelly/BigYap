@@ -114,7 +114,7 @@ final class AppSettings {
         appendTrailingSpace = defaults.object(forKey: Key.appendTrailingSpace) as? Bool ?? true
         paragraphPerSentence = defaults.object(forKey: Key.paragraphPerSentence) as? Bool ?? true
         trimSilence = defaults.object(forKey: Key.trimSilence) as? Bool ?? true
-        removeFillerWords = defaults.object(forKey: Key.removeFillerWords) as? Bool ?? false
+        removeFillerWords = defaults.object(forKey: Key.removeFillerWords) as? Bool ?? true
         correctWithVocabulary = defaults.object(forKey: Key.correctWithVocabulary) as? Bool ?? true
         customVocabulary = defaults.stringArray(forKey: Key.customVocabulary) ?? []
         fillerWords = defaults.stringArray(forKey: Key.fillerWords) ?? AppSettings.defaultFillerWords
