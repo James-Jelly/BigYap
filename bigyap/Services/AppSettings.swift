@@ -19,6 +19,7 @@ final class AppSettings {
         static let hotKeyKeyCode = "hotKeyKeyCode"
         static let hotKeyModifiers = "hotKeyModifiers"
         static let hotKeyLabel = "hotKeyLabel"
+        static let pausePlaybackWhileRecording = "pausePlaybackWhileRecording"
     }
 
     /// A conservative default filler list. Words people rarely mean to keep —
@@ -79,6 +80,13 @@ final class AppSettings {
         didSet { defaults.set(globalHotKeyEnabled, forKey: Key.globalHotKeyEnabled) }
     }
 
+    /// macOS only: pause whatever is playing (Music, Spotify, a browser tab)
+    /// for the length of a take and resume it afterwards. Needs Accessibility,
+    /// like pasting. Ignored on iOS, where the audio session ducks instead.
+    var pausePlaybackWhileRecording: Bool {
+        didSet { defaults.set(pausePlaybackWhileRecording, forKey: Key.pausePlaybackWhileRecording) }
+    }
+
     /// macOS only: whether the Accessibility explainer has been shown once.
     /// Only gates the automatic appearance — Settings can always reopen it.
     var hasSeenAccessibilityPrimer: Bool {
@@ -113,6 +121,7 @@ final class AppSettings {
         hasSeenPermissionPrimer = defaults.bool(forKey: Key.hasSeenPermissionPrimer)
         globalHotKeyEnabled = defaults.object(forKey: Key.globalHotKeyEnabled) as? Bool ?? true
         hasSeenAccessibilityPrimer = defaults.bool(forKey: Key.hasSeenAccessibilityPrimer)
+        pausePlaybackWhileRecording = defaults.object(forKey: Key.pausePlaybackWhileRecording) as? Bool ?? true
         #if os(macOS)
         // All three parts must be present, or the stored shortcut is
         // incoherent and the default is safer than a half-read one.

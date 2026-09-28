@@ -2,7 +2,15 @@
 
 All notable changes to BigYap for Mac, newest first.
 
-## 1.0 (in progress)
+## 1.1 (2026-09-28)
+
+- Pause music while recording: when a take starts (the Record button or the shortcut),
+  whatever is playing pauses, then carries on when the take ends. BigYap presses the
+  Play/Pause media key only when Core Audio shows another app sending audio out. It never
+  presses it for calls or system sounds. Uses the same Accessibility permission as pasting. A switch in
+  Settings > Playback, on by default.
+
+## 1.0 (2026-09-08)
 
 First public release of the source.
 

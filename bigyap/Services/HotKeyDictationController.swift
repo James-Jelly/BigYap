@@ -124,7 +124,10 @@ final class HotKeyDictationController {
 
         do {
             let session = session
-            try await recorder.start(onChunk: { session?.feed($0) })
+            try await recorder.start(
+                pausingPlayback: settings.pausePlaybackWhileRecording,
+                onChunk: { session?.feed($0) }
+            )
             isDictating = true
             showRecordingIndicator()
         } catch {

@@ -117,6 +117,43 @@ enum MicPermission {
     }
 }
 
+// MARK: - Media playback
+
+/// Pauses whatever the user is listening to while a take records, then resumes
+/// it. macOS only: on iOS the recorder's audio session already ducks other
+/// audio, and there is no way to pause another app's playback there anyway.
+///
+/// The Mac presses the Play/Pause media key (see `SystemPlayback`). That key is
+/// a toggle, so it is pressed only when another app is sending audio out, and
+/// only with Accessibility granted, since that permission governs posting any
+/// event into the system. Without it the take simply records over the music.
+enum MediaPlayback {
+    /// Returns true only when it pressed Play/Pause, which is the caller's cue
+    /// to call `resume()` when the take ends.
+    @MainActor
+    static func pauseIfPlaying() -> Bool {
+        #if os(macOS)
+        guard SystemTextInjector.canInjectKeystrokes,
+              PlaybackPausePolicy.isOtherAudioPlaying(
+                  SystemPlayback.audioOutputProcesses(),
+                  ownPID: ProcessInfo.processInfo.processIdentifier
+              )
+        else { return false }
+        SystemPlayback.pressPlayPause()
+        return true
+        #else
+        return false
+        #endif
+    }
+
+    @MainActor
+    static func resume() {
+        #if os(macOS)
+        SystemPlayback.pressPlayPause()
+        #endif
+    }
+}
+
 // MARK: - System settings
 
 enum SystemSettings {

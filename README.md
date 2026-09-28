@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://bigyap.app/downloads/BigYap-1.0.dmg"><strong>Download for Mac</strong></a> ·
+  <a href="https://bigyap.app/downloads/BigYap-1.1.dmg"><strong>Download for Mac</strong></a> ·
   <a href="https://bigyap.app">bigyap.app</a> ·
   <a href="https://bigyap.app/privacy">Privacy policy</a> ·
   <a href="LICENSE">MIT licence</a>
@@ -42,6 +42,8 @@ analytics and no account, and you do not have to take my word for it.
 - **Clean text, your words.** Three on device passes, each one a switch in Settings: trim
   silence, remove filler words (um, uh, you know, editable), and correct spelling against
   your own vocabulary (names, jargon, product names).
+- **Pauses your music.** When a take starts, whatever is playing (Music, Spotify, a video
+  in Safari or Chrome) pauses. It carries on when you finish. One switch in Settings.
 - **History.** Every transcript is saved locally with search, favourites, inline editing,
   undo delete and export as plain text.
 - **Runs on any Mac with macOS 26.** It uses Apple's on device speech engine, not Apple
@@ -60,7 +62,8 @@ Every claim below points at the file that proves it.
 | **Transcription happens on device.** | [`AppleSpeechTranscriberEngine.swift`](bigyap/Services/AppleSpeechTranscriberEngine.swift) and [`LiveTranscriptionSession.swift`](bigyap/Services/LiveTranscriptionSession.swift) drive Apple's `SpeechAnalyzer`, the same engine behind Notes and Voice Memos. |
 | **Audio is never written to disk.** | [`AudioRecorder.swift`](bigyap/Services/AudioRecorder.swift) keeps samples in memory and hands them to the transcriber. Nothing is saved. |
 | **Transcripts stay local.** | [`TranscriptEntry.swift`](bigyap/Models/TranscriptEntry.swift) is a SwiftData model stored in the app's own container. |
-| **Accessibility is used for exactly one keystroke.** | [`SystemTextInjector.swift`](bigyap/Services/SystemTextInjector.swift) writes the pasteboard and posts a single ⌘V. It does not read, watch or log anything from other apps. Without the permission the text goes to your clipboard instead. |
+| **Accessibility is used for two synthetic keys, nothing more.** | [`SystemTextInjector.swift`](bigyap/Services/SystemTextInjector.swift) writes the pasteboard and posts a single ⌘V. [`SystemPlayback.swift`](bigyap/Services/SystemPlayback.swift) posts the Play/Pause media key when a take starts and again when it ends. Neither reads, watches or logs anything inside other apps. Without the permission the text goes to your clipboard instead and your music keeps playing. |
+| **Pausing music only asks "is anything playing?"** | Before pressing Play/Pause, [`SystemPlayback.swift`](bigyap/Services/SystemPlayback.swift) asks Core Audio which processes are sending audio out right now: a yes or no per process plus its bundle id. It never hears or records their audio, keeps nothing and runs once per take. The rule for when to press is [`PlaybackPausePolicy.swift`](bigyap/Services/PlaybackPausePolicy.swift), covered by `Tests/run-tests.sh`. |
 | **The hot key needs no permission.** | [`GlobalHotKey.swift`](bigyap/Services/GlobalHotKey.swift) uses Carbon `RegisterEventHotKey`, which works inside the sandbox and never observes other keystrokes. |
 
 **The one network event.** The first time you transcribe, macOS itself downloads Apple's
@@ -91,14 +94,14 @@ The strongest check is to build it yourself from this source and use that copy i
 
 - **Download:** get the signed and notarised DMG from
   [bigyap.app](https://bigyap.app), or the direct link
-  [BigYap-1.0.dmg](https://bigyap.app/downloads/BigYap-1.0.dmg). Open it and drag BigYap
+  [BigYap-1.1.dmg](https://bigyap.app/downloads/BigYap-1.1.dmg). Open it and drag BigYap
   to Applications. The same file, with its SHA-256 checksum, is attached to each
   [GitHub release](../../releases).
 - **Build it yourself:** see below.
 
 On first launch macOS asks for the microphone. BigYap then explains the optional
-Accessibility permission, which it needs only to paste. Decline it and the app still works,
-with transcripts landing on the clipboard.
+Accessibility permission, which it needs only to paste and to pause your music. Decline it
+and the app still works, with transcripts landing on the clipboard.
 
 ## Build from source
 
@@ -149,6 +152,8 @@ bigyap/
     GlobalHotKey.swift             Carbon hot key registration
     HotKeyDictationController.swift  The ⌥Space take: record, transcribe, paste
     SystemTextInjector.swift       Pasteboard write + one synthetic ⌘V
+    SystemPlayback.swift           Core Audio "is anything playing?" + the Play/Pause key
+    PlaybackPausePolicy.swift      When to press Play/Pause (pure, testable)
     DictationShortcut.swift        User configurable shortcut model
     AppSettings.swift              Toggles and lists, UserDefaults backed
     Platform.swift                 Every macOS / iOS difference, in one file
@@ -160,8 +165,8 @@ bigyap/
 shortcut drive the same recorder, the same streaming session and the same finaliser. Only
 one of them can hold the microphone at a time.
 
-**The pure core is dependency free.** `TranscriptProcessor`, `FuzzyMatcher` and
-`VoiceActivityTrimmer` import only Foundation and Accelerate, are `Sendable`, and are what
+**The pure core is dependency free.** `TranscriptProcessor`, `FuzzyMatcher`,
+`VoiceActivityTrimmer` and `PlaybackPausePolicy` import only Foundation and Accelerate, are `Sendable` and are what
 `Tests/run-tests.sh` exercises.
 
 **One target, two platforms.** The same Xcode target also builds the iPhone version of
@@ -173,7 +178,7 @@ BigYap. Platform differences are kept to `Services/Platform.swift` and a handful
 | Permission | Required | Why |
 | --- | --- | --- |
 | Microphone | Yes | To hear you. Audio stays in memory. |
-| Accessibility | No | To paste the finished transcript into the app you are using. Without it the text is copied to the clipboard. |
+| Accessibility | No | To paste the finished transcript into the app you are using and to press Play/Pause so your music pauses during a take. Without it the text is copied to the clipboard and music keeps playing. |
 
 Nothing else. No Full Disk Access, no Screen Recording, no Input Monitoring, no login item.
 

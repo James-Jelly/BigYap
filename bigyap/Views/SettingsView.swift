@@ -51,6 +51,16 @@ struct SettingsView: View {
                     Text("Removes silent gaps before transcription, on device — so pauses and dead air don't get processed.")
                 }
 
+                #if os(macOS)
+                Section {
+                    Toggle("Pause music while recording", isOn: $settings.pausePlaybackWhileRecording)
+                } header: {
+                    Text("Playback")
+                } footer: {
+                    Text("When a take starts, whatever is playing (Music, Spotify, a video in your browser) pauses. It carries on when you finish. This uses the same Accessibility access as pasting.")
+                }
+                #endif
+
                 Section {
                     Toggle("Remove filler words", isOn: $settings.removeFillerWords)
                     NavigationLink {

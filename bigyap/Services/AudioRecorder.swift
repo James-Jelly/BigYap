@@ -148,6 +148,10 @@ final class AudioRecorder {
     @ObservationIgnored private var sink: AudioTapSink?
     @ObservationIgnored private var startedAt: Date?
     @ObservationIgnored private var levelTask: Task<Void, Never>?
+    /// Whether this take paused the user's music, so `stop()` resumes it. Kept
+    /// per take rather than re-read from settings, so flipping the toggle
+    /// mid-take can't strand the music paused.
+    @ObservationIgnored private var pausedPlayback = false
 
     func requestPermission() async -> Bool {
         await MicPermission.request()
@@ -155,9 +159,20 @@ final class AudioRecorder {
 
     /// Starts capture. `onChunk` receives each converted 16 kHz sample chunk on
     /// the realtime audio thread — keep it cheap (e.g. yield into a stream).
-    func start(onChunk: (@Sendable ([Float]) -> Void)? = nil) async throws {
+    /// `pausingPlayback` pauses whatever is playing until `stop()` (macOS; see
+    /// `MediaPlayback`). Both entry points record through here, so the window
+    /// button and the global shortcut behave the same.
+    func start(pausingPlayback: Bool = false, onChunk: (@Sendable ([Float]) -> Void)? = nil) async throws {
         guard !isRecording else { return }
-        let sink = try await controller.start(onChunk: onChunk)
+        // Before the microphone opens, so the take doesn't start over the music.
+        pausedPlayback = pausingPlayback && MediaPlayback.pauseIfPlaying()
+        let sink: AudioTapSink
+        do {
+            sink = try await controller.start(onChunk: onChunk)
+        } catch {
+            resumePlaybackIfPaused()
+            throw error
+        }
         self.sink = sink
         startedAt = .now
         isRecording = true
@@ -171,6 +186,7 @@ final class AudioRecorder {
         }
 
         await controller.stop()
+        resumePlaybackIfPaused()
 
         isRecording = false
         AudioRecorder.isCapturing = false
@@ -184,6 +200,12 @@ final class AudioRecorder {
         let duration = startedAt.map { Date.now.timeIntervalSince($0) } ?? 0
         startedAt = nil
         return RecordedAudio(samples: captured, sampleRate: 16_000, duration: duration)
+    }
+
+    private func resumePlaybackIfPaused() {
+        guard pausedPlayback else { return }
+        pausedPlayback = false
+        MediaPlayback.resume()
     }
 
     /// Mirrors the sink's level onto the main actor at ~16 Hz so the audio

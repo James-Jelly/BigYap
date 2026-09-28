@@ -71,5 +71,19 @@ check(TranscriptEditPolicy.committedText(edited: "", previous: "old") == nil, "e
 check(TranscriptEditPolicy.committedText(edited: "  \n\t ", previous: "old") == nil, "edit policy rejects whitespace-only")
 check(TranscriptEditPolicy.committedText(edited: " padded ", previous: "old") == " padded ", "edit policy preserves surrounding whitespace of real text")
 
+// MARK: PlaybackPausePolicy
+func audio(_ pid: Int32, _ bundle: String, output: Bool = true, input: Bool = false) -> AudioProcessActivity {
+    AudioProcessActivity(pid: pid, bundleID: bundle, isRunningOutput: output, isRunningInput: input)
+}
+let me: Int32 = 100
+check(!PlaybackPausePolicy.isOtherAudioPlaying([], ownPID: me), "pause policy: silence means no pause")
+check(PlaybackPausePolicy.isOtherAudioPlaying([audio(200, "com.spotify.client")], ownPID: me), "pause policy: a player's output pauses")
+check(PlaybackPausePolicy.isOtherAudioPlaying([audio(201, "com.apple.WebKit.GPU")], ownPID: me), "pause policy: a Safari tab's output pauses")
+check(!PlaybackPausePolicy.isOtherAudioPlaying([audio(200, "com.spotify.client", output: false)], ownPID: me), "pause policy: an idle player is ignored")
+check(!PlaybackPausePolicy.isOtherAudioPlaying([audio(me, "com.jellydevops.bigyap.bigyap")], ownPID: me), "pause policy: BigYap's own output is ignored")
+check(!PlaybackPausePolicy.isOtherAudioPlaying([audio(300, "us.zoom.xos", input: true)], ownPID: me), "pause policy: a call (output + input) is ignored")
+check(!PlaybackPausePolicy.isOtherAudioPlaying([audio(400, "systemsoundserverd"), audio(401, "com.apple.VoiceOver")], ownPID: me), "pause policy: alert sounds and VoiceOver are ignored")
+check(PlaybackPausePolicy.isOtherAudioPlaying([audio(300, "us.zoom.xos", input: true), audio(200, "com.apple.Music")], ownPID: me), "pause policy: music alongside a call still pauses")
+
 print(failures == 0 ? "\nALL PASSED" : "\n\(failures) FAILED")
 exit(failures == 0 ? 0 : 1)

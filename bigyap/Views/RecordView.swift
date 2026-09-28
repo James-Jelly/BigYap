@@ -508,7 +508,10 @@ struct RecordView: View {
 
         do {
             let session = liveSession
-            try await recorder.start(onChunk: { session?.feed($0) })
+            try await recorder.start(
+                pausingPlayback: settings.pausePlaybackWhileRecording,
+                onChunk: { session?.feed($0) }
+            )
             Haptics.tap(.medium)
         } catch {
             liveSession?.cancel()
