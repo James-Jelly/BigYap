@@ -6,9 +6,12 @@ import SwiftUI
 ///
 /// Worth the dedicated screen because this permission is the one people
 /// reasonably hesitate over — "control your computer" is alarming phrasing for
-/// what is, here, one ⌘V. It also has an awkward mechanic: the grant usually
-/// doesn't reach an already-running process, so the flow has to offer a
-/// relaunch rather than leaving the user wondering why nothing changed.
+/// what is, here, a ⌘V and the Play/Pause key. It also has awkward mechanics:
+/// the grant usually doesn't reach an already-running process, so the flow has
+/// to offer a relaunch; and a grant made for a differently signed copy of
+/// BigYap still shows as switched on while no longer applying, so the steps
+/// say how to clear it rather than leaving the user staring at a switch that's
+/// already on.
 struct AccessibilityPrimerView: View {
     var onDismiss: () -> Void
 
@@ -46,6 +49,11 @@ struct AccessibilityPrimerView: View {
                     step(2, "If BigYap isn't in the list, click + and add it")
                     step(3, "Switch BigYap on")
                     step(4, "Relaunch BigYap so the change takes effect")
+                    Text("Already switched on? macOS can hold on to an older copy of BigYap. Select it, remove it with −, then add BigYap again with +.")
+                        .font(.brand(.caption))
+                        .foregroundStyle(Brand.inkTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, Spacing.xs)
                 }
                 .padding(Spacing.md)
                 .background(Brand.surfaceMuted, in: RoundedRectangle(cornerRadius: Radius.sm, style: .continuous))
@@ -118,7 +126,7 @@ struct AccessibilityPrimerView: View {
         if isGranted {
             return "BigYap can now paste straight into whatever you're typing in. Press \(settings.dictationShortcut.label) anywhere to start a take."
         }
-        return "To drop your words into the app you're typing in, BigYap sends a single ⌘V — and macOS treats that as controlling your computer, so it needs Accessibility access. Nothing is read from other apps, and nothing leaves your Mac."
+        return "BigYap sends ⌘V to drop your words into the app you're typing in and presses Play/Pause to pause your music while you talk. macOS counts both as controlling your computer, so they need Accessibility access. Nothing is read from other apps and nothing leaves your Mac."
     }
 
     private func step(_ number: Int, _ text: String) -> some View {

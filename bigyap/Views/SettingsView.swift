@@ -54,6 +54,12 @@ struct SettingsView: View {
                 #if os(macOS)
                 Section {
                     Toggle("Pause music while recording", isOn: $settings.pausePlaybackWhileRecording)
+                    // Without Accessibility the media key is silently dropped,
+                    // so say so here rather than let the switch look like it works.
+                    if settings.pausePlaybackWhileRecording && !accessibilityGranted {
+                        LabeledContent("Status", value: "Needs Accessibility")
+                        Button("Set up Accessibility…") { showAccessibilityPrimer = true }
+                    }
                 } header: {
                     Text("Playback")
                 } footer: {

@@ -2,6 +2,14 @@
 
 All notable changes to BigYap for Mac, newest first.
 
+## 1.1.1 (2026-09-28)
+
+- Settings > Playback now says "Needs Accessibility", with a button to set it up, when
+  music can't be paused because the permission is missing.
+- The Accessibility guide explains what to do when BigYap already looks switched on but
+  isn't working: macOS can keep a grant from an older copy, so remove BigYap with − and
+  add it again. It also mentions the Play/Pause key alongside the paste keystroke.
+
 ## 1.1 (2026-09-28)
 
 - Pause music while recording: when a take starts (the Record button or the shortcut),
